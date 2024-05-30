@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34916.146
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silicon_WebApp", "Silicon_WebApp\Silicon_WebApp\Silicon_WebApp.csproj", "{99221DF4-470A-486D-853D-19935F2FC547}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silicon_WebApp.Client", "Silicon_WebApp\Silicon_WebApp.Client\Silicon_WebApp.Client.csproj", "{5A8C2239-4D16-4CCA-ABBE-FAF11ED60FDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{99221DF4-470A-486D-853D-19935F2FC547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99221DF4-470A-486D-853D-19935F2FC547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99221DF4-470A-486D-853D-19935F2FC547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99221DF4-470A-486D-853D-19935F2FC547}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A8C2239-4D16-4CCA-ABBE-FAF11ED60FDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A8C2239-4D16-4CCA-ABBE-FAF11ED60FDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A8C2239-4D16-4CCA-ABBE-FAF11ED60FDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A8C2239-4D16-4CCA-ABBE-FAF11ED60FDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1D5A5419-F49C-49A1-B874-9A6FA7E63154}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,141 @@
+﻿@page "/Account/Login"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using Silicon_WebApp.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Sign in</PageTitle>
+
+<section id="signin">
+    <div class="container">
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="signin-error">
+                @errorMessage
+            </div>
+
+        }
+        <EditForm Model="SignIn" method="post" OnValidSubmit="LoginUser" FormName="Signin" novalidate>
+            <DataAnnotationsValidator />
+            <h1>Welcome Back</h1>
+            <p>Don't have an account yet? Sign up <NavLink href="/Account/Register">here</NavLink>.</p>
+
+            <div class="content">
+
+                <div id="form-email" class="input-group">
+                    <label asp-for="Email">Email</label>
+                    <ValidationMessage For="() => SignIn.Email" />
+                    <InputText @bind-Value="SignIn.Email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                </div>
+
+                <div id="form-password" class="input-group">
+                    <label asp-for="Password">Password</label>
+                    <ValidationMessage For="() => SignIn.Password" class="text-danger" />
+                    <InputText type="password" @bind-Value="SignIn.Password" autocomplete="current-password" aria-required="true" placeholder="password" />
+                </div>
+
+
+                <div id="form-remember" class="checkbox">
+                    <div class="checkbox-group">
+                        <InputCheckbox @bind-Value="SignIn.IsPresistent" />
+                        <label>Remeber me</label>
+                    </div>
+                    <ValidationMessage For="() => SignIn.IsPresistent" />
+                </div>
+
+                <button id="form-button" class="btn-theme-s" type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i>Sign in</button>
+
+                <div>
+                    <p>
+                        <NavLink href="Account/ForgotPassword">Forgot your password?</NavLink>
+                    </p>
+                </div>
+
+                <hr />
+                <div id="external-signin">
+                    <a class="btn-gray" asp-controller="external" asp-action="signin"><i class="fa-brands fa-google"></i>Google</a>
+                    <a class="btn-gray" asp-controller="external" asp-action="signin"><i class="fa-brands fa-facebook"></i>Facebook</a>
+
+                </div>
+              
+
+            </div>
+        </EditForm>
+
+
+    </div>
+</section> 
+
+
+
+
+@code {
+    private string? errorMessage;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    public SignInModel SignIn { get; set; } = new();
+   
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+
+    public async Task LoginUser()
+    {
+        // This doesn't count login failures towards account lockout
+        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+        var result = await SignInManager.PasswordSignInAsync(SignIn.Email, SignIn.Password, SignIn.IsPresistent, lockoutOnFailure: false);
+        if (result.Succeeded)
+        {
+            Logger.LogInformation("User logged in.");
+            RedirectManager.RedirectTo(ReturnUrl);
+        }
+        else if (result.RequiresTwoFactor)
+        {
+            RedirectManager.RedirectTo(
+                "Account/LoginWith2fa",
+                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = SignIn.IsPresistent });
+        }
+      
+        else
+        {
+            errorMessage = "Error: Invalid login attempt.";
+        }
+    }
+
+  
+
+    public class SignInModel
+    {
+        [Required]
+        [Display(Name = "Email adress", Prompt = "Enter your email adress")]
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; } = null!;
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password", Prompt = "Enter your password")]
+        public string Password { get; set; } = null!;
+
+        [Display(Name = "Remember me", Prompt = "Remember me")]
+        public bool IsPresistent { get; set; }
+    }
+}

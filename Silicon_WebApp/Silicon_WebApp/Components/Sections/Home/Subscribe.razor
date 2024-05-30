@@ -1,0 +1,144 @@
+﻿@rendermode InteractiveServer
+
+<section id="subscribe">
+
+    <div class="container">
+        <div class="subscribeTitle">
+            <h2>Don't Want to Miss Anything?</h2>
+            <img src="/images/Home/Symbols/Group.svg" alt="arrow pointing down">
+        </div>
+        <EditForm Model="Form" method="post" OnValidSubmit="OnValidSubmit" FormName="subscribe" novalidate>
+            <DataAnnotationsValidator />
+            <div class="alternative">
+                <h4>Sign up for Newsletters</h4>
+
+                <div class="options">
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="Form.DailyNewsLetter"  />
+                            <label>Daily NewsLetter</label>
+
+                        </div>
+
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="Form.AdvertisingUpdate" />
+                            <label>Advertising Update</label>
+
+                        </div>
+
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="Form.WeekinReview"  />
+                            <label>Weekin Review</label>
+
+                        </div>
+
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="Form.EventUpdates" />
+                            <label>Event Updates</label>
+
+                        </div>
+
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="Form.StartupWeekly" />
+                            <label>Startup Weekly</label>
+
+                        </div>
+
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="input-group">
+                            <InputCheckbox @bind-Value="Form.Podcast" />
+                            <label>Podcast</label>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-email">
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <InputText @bind-Value="Form.Email" placeholder="Enter your email..."/>
+                </div>
+                <button type="submit" class="btn-theme">Subscribe*</button>
+            </div>
+            <ValidationMessage For="@(()=> Form.Email)" class="alert-text" />
+            <span class="status-message">@StatusMessage</span>
+            
+            
+
+        </EditForm>
+
+
+    </div>
+
+
+
+
+
+</section>
+
+
+@code {
+    [SupplyParameterFromForm]
+    public SubscribeForm Form { get; set; } = new();
+
+
+    [SupplyParameterFromQuery]
+    public string StatusMessage { get; set; } = "*Yes i agree to the terms and privacy policy.";
+
+
+    public async Task OnValidSubmit()
+    {
+        try
+        {
+
+            var result = await Http.PostAsJsonAsync("https://newsletterprovider-jsbackend.azurewebsites.net/api/Subscribe?code=wjuVlqbKWiouDb-G9vs7PF5kf3stURHcR7TlW5B9kNIsAzFuRIYe0g%3D%3D", Form);
+            if (result.IsSuccessStatusCode)
+            {
+                StatusMessage = "Thank you for subscribing!";
+            }
+            else
+            {
+                StatusMessage = "Could not subscribe at the moment. Please try again later!";
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+            StatusMessage = "Not able to subscribe. Please try again later";
+            Console.WriteLine(ex.Message.ToString());
+
+        }
+        Form = new();
+
+        await Task.Delay(2000);
+        StatusMessage = "*Yes i agree to the terms and privacy policy.";
+
+    }
+
+    public class SubscribeForm
+    {
+        [Required(ErrorMessage ="You must provide an valid email")]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Email", Prompt = "Enter your email adress...")]
+        public string Email { get; set; } = null!;
+
+        public bool DailyNewsLetter { get; set; }
+        public bool AdvertisingUpdate { get; set; }
+        public bool WeekinReview { get; set; }
+        public bool EventUpdates { get; set; }
+        public bool StartupWeekly { get; set; }
+        public bool Podcast { get; set; }
+    }
+}
