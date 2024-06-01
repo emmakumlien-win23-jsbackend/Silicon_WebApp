@@ -1,5 +1,106 @@
-﻿<h3>Library</h3>
+﻿@using Microsoft.AspNetCore.Authorization
+@using Newtonsoft.Json
+@using Silicon_WebApp.Models
+@* @attribute [Authorize] *@
+@attribute [StreamRendering]
+<section id="Library">
+    <div class="container">
+
+
+
+        <div class="course-items">
+            @if (Courses == null)
+            {
+                <div class="spinning"><i class="fa-sharp fa-solid fa-spinner-third fa-spin"></i>Loading...</div>
+            }
+            else{
+                @foreach (var courses in Courses)
+                {
+                    <a class="course" asp-action="Details" asp-controller="Course" asp-route-id="@courses.Id">
+                        @if (courses.IsBestseller)
+                        {
+                            <div class="bestseller">Best Seller</div>
+                        }
+                        <button class="btn btn-circle bookmark"><i class="fa-regular fa-bookmark"></i></button>
+
+                        <img src="@courses.ImageUri" alt="@courses.Title" />
+
+                        <div class="content">
+                            <h5 class="title">@courses.Title</h5>
+                            <p class="author">@courses.Author</p>
+                            <div class="pricing">
+                                @if (!string.IsNullOrEmpty(courses.Price!.Discount.ToString()))
+                                {
+                                    <div class="discount">@courses.Price.Discount.ToString())</div>
+                                }
+                                <div class="price @(!string.IsNullOrEmpty(courses.Price.Discount.ToString())?"discount-enable" : "")">@courses.Price.Price.ToString())</div>
+                            </div>
+                            <div class="footer">
+                                <div class="hours">
+                                    <i class="fa-regular fa-clock"></i> @courses.Hours hours
+                                </div>
+                                <div class="likes">
+                                    <i class="fa-regular fa-thumbs-up"></i> @courses.LikesInProcent (@courses.LikesInNumbers)
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+
+        <div class="pageSelector">
+            <a href="#">«</a>
+            <a href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">»</a>
+        </div>
+
+
+    </div>
+
+
+
+
+</section>
+
 
 @code {
+    private List<CourseLibraryModel>? Courses;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GraphQlQuery { Query = "{getAllCourses {id isBestseller title likesInProcent likesInNumbers hours authors {name} prices {price currency discount} }}" };
+        var response = await Http.PostAsJsonAsync("http://localhost:7103/api/graphql", query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<DynamicGraphQLResponse>();
+            // var rest = JsonConvert.DeserializeObject<CourseLibraryModel>(result.Data.ToString());
+            Courses = result?.Data.GetProperty("getAllCourses").EnumerateArray()
+            .Select(course => new CourseLibraryModel
+            {
+                Id = course.GetProperty("id").GetString()!,
+                IsBestseller = course.GetProperty("isBestSeller").GetBoolean(),
+                ImageUri = course.GetProperty("imageUri").GetString(),
+                Title = course.GetProperty("isBestSeller").GetString()!,
+                Author = course.GetProperty("authors").GetProperty("name").GetString()!,
+                Price = new Prices{
+                    Currency= course.GetProperty("prices").GetProperty("currency").GetString(),
+                    Price = course.GetProperty("prices").GetProperty("price").GetDecimal(),
+                    Discount = course.GetProperty("prices").GetProperty("discount").GetDecimal()
+                    },
+                Hours = course.GetProperty("hours").GetString(),
+                LikesInProcent = course.GetProperty("likesInProcent").GetString()!,
+                LikesInNumbers = course.GetProperty("likesInNumbers").GetString()!
+                    
+
+            }).ToList();
+
+            // Author = string.Concat(course.GetProperty("authors")[0].GetProperty("name").GetString()," & ",course.GetProperty("authors")[1].GetProperty("name").GetString()), Flera författare
+        }
+    }
 }

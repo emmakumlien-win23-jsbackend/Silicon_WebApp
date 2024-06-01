@@ -39,10 +39,15 @@
             grid-template-columns: 1fr 1fr 1fr;
             gap: 1.5rem;
 
-
-
-
-            .course {
+            .spinning{
+                display: block;
+                justify-content:space-around;
+                align-items:center;
+                text-align: center;
+            }
+                
+                
+             .course {
                 position: relative;
                 display: block;
                 border-radius: 8px;

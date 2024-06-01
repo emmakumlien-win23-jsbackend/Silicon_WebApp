@@ -25,7 +25,6 @@
   <ItemGroup>
     <Folder Include="Components\Sections\Account\" />
     <Folder Include="Components\Sections\Auth\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

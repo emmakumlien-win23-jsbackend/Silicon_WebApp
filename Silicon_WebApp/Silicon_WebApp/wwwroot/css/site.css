@@ -1198,6 +1198,12 @@ footer .container span {
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1.5rem;
 }
+#Library .container .course-items .spinning {
+  display: block;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+}
 #Library .container .course-items .course {
   position: relative;
   display: block;
